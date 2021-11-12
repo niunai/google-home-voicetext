@@ -11,10 +11,9 @@ if (process.env["GOOGLE_HOME_IP"]) {
 
 // Initialize Firebase
 const admin = require("firebase-admin");
-const serviceAccount = require(process.env["FIREBASE_SECRET_KEY_PATH"]);
+const serviceAccount = require("./serviceAccountKey.json");
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: process.env["FIREBASE_DATABASE_URL"]
+  credential: admin.credential.cert(serviceAccount)
 });
 
 // Connect to Firestore

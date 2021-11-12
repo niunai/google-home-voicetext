@@ -13,9 +13,9 @@
     "castv2-client": "^1.1.2",
     "date-utils": "^1.2.21",
     "express": "^4.16.4",
-    "firebase-admin": "^7.1.1",
+    "firebase-admin": "^9.9.0",
     "fs": "0.0.1-security",
-    "mdns": "^2.3.3",
+    "mdns": "^2.7.2",
     "os": "^0.1.1",
     "voicetext": "0.0.7"
   }

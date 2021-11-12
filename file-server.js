@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const fs = require("fs");
 
 const app = express();
-const serverPort = 8888;
+const serverPort = 8082;
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 // Allow CORS

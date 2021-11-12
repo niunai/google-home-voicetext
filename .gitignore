@@ -1,3 +1,7 @@
 *.wav
 node_modules
 .DS_Store
+serviceAccountKey.json
+env_list.sh
+jihou.sh
+

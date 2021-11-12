@@ -19,9 +19,8 @@ if (process.env["WIRELESS_IP"]) {
   });
 }
 
-const FILE_SERVER_PORT = "8888";
+const FILE_SERVER_PORT = "8082";
 const VOICETEXT_API_KEY = process.env["VOICETEXT_API_KEY"];
-const VOICETEXT_SPEAKER = process.env["VOICETEXT_SPEAKER"];
 
 const VoiceText = require("voicetext");
 const voice = new VoiceText(VOICETEXT_API_KEY);
@@ -30,26 +29,13 @@ const OUTPUT_URL =
   "http://" + WIRELESS_IP + ":" + FILE_SERVER_PORT + "/googlehome/_temp.wav";
   const fs = require("fs");
 
-let SPEAKER;
-if (VOICETEXT_SPEAKER === "BEAR") {
-  SPEAKER = voice.SPEAKER.BEAR;
-} else if (VOICETEXT_SPEAKER === "HARUKA") {
-  SPEAKER = voice.SPEAKER.HARUKA;
-} else if (VOICETEXT_SPEAKER === "SANTA") {
-  SPEAKER = voice.SPEAKER.SANTA;
-} else if (VOICETEXT_SPEAKER === "SHOW") {
-  SPEAKER = voice.SPEAKER.SHOW;
-} else if (VOICETEXT_SPEAKER === "TAKERU") {
-  SPEAKER = voice.SPEAKER.TAKERU;
-} else {
-  SPEAKER = voice.SPEAKER.HIKARI;
-}
+const speakers = [voice.SPEAKER.SHOW, voice.SPEAKER.BEAR, voice.SPEAKER.HARUKA, voice.SPEAKER.HIKARI, voice.SPEAKER.SANTA, voice.SPEAKER.TAKERU];
 
 class VoiceTextWriter {
   convertToText(text) {
     return new Promise(function(resolve, reject) {
       voice
-        .speaker(SPEAKER)
+        .speaker(speakers[Math.floor( Math.random() * speakers.length)])
         .emotion(voice.EMOTION.HAPPINESS)
         .emotion_level(voice.EMOTION_LEVEL.HIGH)
         .volume(150)

@@ -3,7 +3,7 @@ const express = require("express");
 const googlehome = require("./google-home-voicetext");
 const bodyParser = require("body-parser");
 const app = express();
-const serverPort = 8080;
+const serverPort = 8083;
 
 const deviceName = "Google Home";
 googlehome.device(deviceName);
