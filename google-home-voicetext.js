@@ -95,7 +95,7 @@ const onDeviceUp = function(host, url, callback) {
       const media = {
         contentId: url,
         contentType: "audio/mp3",
-        streamType: "BUFFERED" // or LIVE
+        streamType: "LIVE" // BUFFERED|LIVE 
       };
       if (url.endsWith("wav")) {
         media.contentType = "audio/wav";
