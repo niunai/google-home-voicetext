@@ -14,6 +14,11 @@ if (process.env["GOOGLE_HOME_IP"]) {
 
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
+
 app.post("/play-mp3", urlencodedParser,function(req, res) {
   now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
   console.log(now);
@@ -24,7 +29,7 @@ app.post("/play-mp3", urlencodedParser,function(req, res) {
     try {
       googlehome.play(url, function(playRes) {
         console.log(playRes);
-        res.send(deviceName + "will play: " + url + "\n");
+        res.send(deviceName + " will play: " + url + "\n");
       });
     } catch (err) {
       console.log(err);
