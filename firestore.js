@@ -1,3 +1,4 @@
+require("dotenv").config();
 require("date-utils");
 // const firebase = require("firebase");
 const googlehome = require("./google-home-voicetext");
@@ -13,20 +14,20 @@ if (process.env["GOOGLE_HOME_IP"]) {
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json");
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
 
 // Connect to Firestore
 const firestore = admin.firestore();
 const document = firestore.doc("/googlehome/chant");
 const observer = document.onSnapshot(
-  docSnapshot => {
+  (docSnapshot) => {
     const text = docSnapshot.get("message");
     if (text) {
       now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
       console.log(now);
       try {
-        googlehome.notify(text, function(notifyRes) {
+        googlehome.notify(text, function (notifyRes) {
           console.log(notifyRes);
         });
       } catch (err) {
@@ -34,14 +35,14 @@ const observer = document.onSnapshot(
       }
       document
         .update({
-          message: ""
+          message: "",
         })
         .then(() => {
           console.log(text);
         });
     }
   },
-  err => {
+  (err) => {
     console.log("Firestore error:", err);
     console.log(document);
   }

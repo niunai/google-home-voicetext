@@ -1,4 +1,7 @@
+require("dotenv").config();
 require("date-utils");
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
 const express = require("express");
 const googlehome = require("./google-home-voicetext");
 const bodyParser = require("body-parser");
@@ -14,20 +17,30 @@ if (process.env["GOOGLE_HOME_IP"]) {
 
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   next();
 });
 
-app.post("/play-mp3", urlencodedParser,function(req, res) {
+app.post("/play-mp3", urlencodedParser, async function (req, res) {
   now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
   console.log(now);
+
+  const mute = await fetch(process.env["MUTE_API_SERVER_URL"])
+    .then((res) => res.json())
+    .then((data) => {
+      return JSON.parse(data.mute);
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+
   if (!req.body) return res.sendStatus(400);
   console.log(req.body);
   const url = req.body.url;
-  if (url) {
+  if (!mute && url) {
     try {
-      googlehome.play(url, function(playRes) {
+      googlehome.play(url, function (playRes) {
         console.log(playRes);
         res.send(deviceName + " will play: " + url + "\n");
       });
@@ -41,15 +54,25 @@ app.post("/play-mp3", urlencodedParser,function(req, res) {
   }
 });
 
-app.post("/google-home-voicetext", urlencodedParser, function(req, res) {
+app.post("/google-home-voicetext", urlencodedParser, async function (req, res) {
   now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
   console.log(now);
+
+  const mute = await fetch(process.env["MUTE_API_SERVER_URL"])
+    .then((res) => res.json())
+    .then((data) => {
+      return JSON.parse(data.mute);
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+
   if (!req.body) return res.sendStatus(400);
   console.log(req.body);
   const text = req.body.text;
-  if (text) {
+  if (!mute && text) {
     try {
-      googlehome.notify(text, function(notifyRes) {
+      googlehome.notify(text, function (notifyRes) {
         console.log(notifyRes);
         res.send(deviceName + " will say: " + text + "\n");
       });
@@ -63,15 +86,13 @@ app.post("/google-home-voicetext", urlencodedParser, function(req, res) {
   }
 });
 
-app.listen(serverPort, function() {
+app.listen(serverPort, function () {
   console.log('POST "text=Hello Google Home" to:');
   console.log(
     "    http://{Server IP address}:" + serverPort + "/google-home-voicetext"
   );
   console.log('POST "url=http://xxx" to:');
-  console.log(
-    "    http://{Server IP address}:" + serverPort + "/play-mp3"
-  );
+  console.log("    http://{Server IP address}:" + serverPort + "/play-mp3");
   console.log("example:");
   console.log(
     'curl -X POST -d "text=こんにちは、Googleです。" http://{Server IP address}:' +
