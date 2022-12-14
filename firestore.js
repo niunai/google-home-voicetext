@@ -1,5 +1,8 @@
 require("dotenv").config();
 require("date-utils");
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
+
 // const firebase = require("firebase");
 const googlehome = require("./google-home-voicetext");
 
@@ -21,15 +24,26 @@ admin.initializeApp({
 const firestore = admin.firestore();
 const document = firestore.doc("/googlehome/chant");
 const observer = document.onSnapshot(
-  (docSnapshot) => {
+  async (docSnapshot) => {
+    const mute = await fetch(process.env["MUTE_API_SERVER_URL"])
+      .then((res) => res.json())
+      .then((data) => {
+        return JSON.parse(data.mute);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+
     const text = docSnapshot.get("message");
     if (text) {
       now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
       console.log(now);
       try {
-        googlehome.notify(text, function (notifyRes) {
-          console.log(notifyRes);
-        });
+        if (!mute) {
+          googlehome.notify(text, function (notifyRes) {
+            console.log(notifyRes);
+          });
+        }
       } catch (err) {
         console.log(err);
       }
