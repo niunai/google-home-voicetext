@@ -1,4 +1,12 @@
-require("dotenv").config();
+import VoiceText from "voicetext";
+import path from "path";
+import os from "os";
+import * as fs from "fs";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+import * as dotenv from "dotenv";
+dotenv.config();
 
 if (!process.env["VOICETEXT_API_KEY"]) {
   throw new Error("VOICETEXT_API_KEY is required.");
@@ -10,7 +18,6 @@ let WIRELESS_IP;
 if (process.env["WIRELESS_IP"]) {
   WIRELESS_IP = process.env["WIRELESS_IP"];
 } else {
-  const os = require("os");
   const ips = os.networkInterfaces();
   const WIRELESS_MODULE_NAME = process.env["WIRELESS_MODULE_NAME"]; // ex. en0
   const WIRELESS_modules = ips[WIRELESS_MODULE_NAME];
@@ -24,12 +31,10 @@ if (process.env["WIRELESS_IP"]) {
 const FILE_SERVER_PORT = "8082";
 const VOICETEXT_API_KEY = process.env["VOICETEXT_API_KEY"];
 
-const VoiceText = require("voicetext");
 const voice = new VoiceText(VOICETEXT_API_KEY);
 const OUT_PATH = __dirname + "/public/voice/_temp.wav";
 const OUTPUT_URL =
   "http://" + WIRELESS_IP + ":" + FILE_SERVER_PORT + "/googlehome/_temp.wav";
-const fs = require("fs");
 
 const speakers = [
   voice.SPEAKER.SHOW,
@@ -39,8 +44,7 @@ const speakers = [
   voice.SPEAKER.SANTA,
   voice.SPEAKER.TAKERU,
 ];
-
-class VoiceTextWriter {
+export class VoiceTextWriter {
   convertToText(text) {
     return new Promise(function (resolve, reject) {
       voice
@@ -60,4 +64,3 @@ class VoiceTextWriter {
     });
   }
 }
-module.exports = VoiceTextWriter;

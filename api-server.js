@@ -1,29 +1,28 @@
-require("dotenv").config();
-require("date-utils");
-const fetch = (...args) =>
-  import("node-fetch").then(({ default: fetch }) => fetch(...args));
-const express = require("express");
-const googlehome = require("./google-home-voicetext");
-const bodyParser = require("body-parser");
+import express from "express";
+import { ip, device, notify, play } from "./google-home-voicetext.js";
+import dt from "date-utils";
+import * as dotenv from "dotenv";
+dotenv.config();
+
 const app = express();
 const serverPort = 8083;
 
 const deviceName = "Google Home";
-googlehome.device(deviceName);
+device(deviceName);
 
 if (process.env["GOOGLE_HOME_IP"]) {
-  googlehome.ip(process.env["GOOGLE_HOME_IP"]);
+  ip(process.env["GOOGLE_HOME_IP"]);
 }
 
-const urlencodedParser = bodyParser.urlencoded({ extended: false });
+app.use(express.urlencoded({ extended: false }));
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   next();
 });
 
-app.post("/play-mp3", urlencodedParser, async function (req, res) {
-  now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
+app.post("/play-mp3", async function (req, res) {
+  const now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
   console.log(now);
 
   const mute = await fetch(process.env["MUTE_API_SERVER_URL"])
@@ -40,7 +39,7 @@ app.post("/play-mp3", urlencodedParser, async function (req, res) {
   const url = req.body.url;
   if (!mute && url) {
     try {
-      googlehome.play(url, function (playRes) {
+      play(url, function (playRes) {
         console.log(playRes);
         res.send(deviceName + " will play: " + url + "\n");
       });
@@ -54,8 +53,8 @@ app.post("/play-mp3", urlencodedParser, async function (req, res) {
   }
 });
 
-app.post("/google-home-voicetext", urlencodedParser, async function (req, res) {
-  now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
+app.post("/google-home-voicetext", async function (req, res) {
+  const now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
   console.log(now);
 
   const mute = await fetch(process.env["MUTE_API_SERVER_URL"])
@@ -72,7 +71,7 @@ app.post("/google-home-voicetext", urlencodedParser, async function (req, res) {
   const text = req.body.text;
   if (!mute && text) {
     try {
-      googlehome.notify(text, function (notifyRes) {
+      notify(text, function (notifyRes) {
         console.log(notifyRes);
         res.send(deviceName + " will say: " + text + "\n");
       });

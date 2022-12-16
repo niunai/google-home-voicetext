@@ -1,11 +1,14 @@
-require("dotenv").config();
-const express = require("express");
-const bodyParser = require("body-parser");
-const fs = require("fs");
+import express from "express";
+import * as fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const serverPort = 8082;
-const urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+app.use(express.urlencoded({ extended: false }));
 
 // Allow CORS
 app.use(function (req, res, next) {

@@ -1,21 +1,16 @@
-require("dotenv").config();
-require("date-utils");
-const fetch = (...args) =>
-  import("node-fetch").then(({ default: fetch }) => fetch(...args));
-
-// const firebase = require("firebase");
-const googlehome = require("./google-home-voicetext");
+import { ip, device, notify, play } from "./google-home-voicetext.js";
+import dt from "date-utils";
+import admin from "firebase-admin";
+import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
 
 const deviceName = "Google Home";
-googlehome.device(deviceName);
+device(deviceName);
 
 if (process.env["GOOGLE_HOME_IP"]) {
-  googlehome.ip(process.env["GOOGLE_HOME_IP"]);
+  ip(process.env["GOOGLE_HOME_IP"]);
 }
 
 // Initialize Firebase
-const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -36,11 +31,11 @@ const observer = document.onSnapshot(
 
     const text = docSnapshot.get("message");
     if (text) {
-      now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
+      const now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
       console.log(now);
       try {
         if (!mute) {
-          googlehome.notify(text, function (notifyRes) {
+          notify(text, function (notifyRes) {
             console.log(notifyRes);
           });
         }
