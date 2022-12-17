@@ -7,7 +7,7 @@ dotenv.config();
 const app = express();
 const serverPort = 8083;
 
-const deviceName = "Google Home";
+const deviceName = process.env["GOOGLE_HOME_NAME"];
 device(deviceName);
 
 if (process.env["GOOGLE_HOME_IP"]) {

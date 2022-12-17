@@ -5,6 +5,7 @@
   "main": "google-home-voicetext.js",
   "type": "module",
   "scripts": {
+    "start": "node api-server.js & node file-server.js & node firestore.js &",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "TAKAHASHI Taro",
@@ -16,7 +17,7 @@
     "express": "^4.16.4",
     "firebase-admin": "^11.4.0",
     "fs": "0.0.1-security",
-    "mdns": "^2.7.2",
+    "mdns-js": "^1.0.3",
     "os": "^0.1.1",
     "voicetext": "0.0.7"
   }
