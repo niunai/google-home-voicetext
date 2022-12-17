@@ -2,8 +2,10 @@ import { ip, device, notify, play } from "./google-home-voicetext.js";
 import dt from "date-utils";
 import admin from "firebase-admin";
 import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
+import * as dotenv from "dotenv";
+dotenv.config();
 
-const deviceName = "Google Home";
+const deviceName = process.env["GOOGLE_HOME_NAME"];
 device(deviceName);
 
 if (process.env["GOOGLE_HOME_IP"]) {
