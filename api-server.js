@@ -14,6 +14,20 @@ if (process.env["GOOGLE_HOME_IP"]) {
   ip(process.env["GOOGLE_HOME_IP"]);
 }
 
+const isMute = async function () {
+  return await fetch(process.env["MUTE_API_SERVER_URL"])
+    .then((res) => res.json())
+    .then((data) => {
+      return JSON.parse(data.mute);
+    })
+    .catch((err) => {
+      console.log(err.message);
+      return false;
+    });
+};
+
+const muteSoundUrl = process.env["MUTE_SOUND_URL"];
+
 app.use(express.urlencoded({ extended: false }));
 
 app.use(function (req, res, next) {
@@ -25,19 +39,25 @@ app.post("/play-mp3", async function (req, res) {
   const now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
   console.log(now);
 
-  const mute = await fetch(process.env["MUTE_API_SERVER_URL"])
-    .then((res) => res.json())
-    .then((data) => {
-      return JSON.parse(data.mute);
-    })
-    .catch((err) => {
-      console.log(err.message);
-    });
-
   if (!req.body) return res.sendStatus(400);
   console.log(req.body);
   const url = req.body.url;
-  if (!mute && url) {
+
+  if (await isMute()) {
+    try {
+      play(muteSoundUrl, function (playRes) {
+        console.log(playRes);
+        res.send(deviceName + " will play: " + muteSoundUrl + "\n");
+      });
+    } catch (err) {
+      console.log(err);
+      res.sendStatus(500);
+      res.send(err);
+    }
+    return;
+  }
+
+  if (url) {
     try {
       play(url, function (playRes) {
         console.log(playRes);
@@ -57,19 +77,25 @@ app.post("/google-home-voicetext", async function (req, res) {
   const now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
   console.log(now);
 
-  const mute = await fetch(process.env["MUTE_API_SERVER_URL"])
-    .then((res) => res.json())
-    .then((data) => {
-      return JSON.parse(data.mute);
-    })
-    .catch((err) => {
-      console.log(err.message);
-    });
-
   if (!req.body) return res.sendStatus(400);
   console.log(req.body);
   const text = req.body.text;
-  if (!mute && text) {
+
+  if (await isMute()) {
+    try {
+      play(muteSoundUrl, function (playRes) {
+        console.log(playRes);
+        res.send(deviceName + " will play: " + muteSoundUrl + "\n");
+      });
+    } catch (err) {
+      console.log(err);
+      res.sendStatus(500);
+      res.send(err);
+    }
+    return;
+  }
+
+  if (text) {
     try {
       notify(text, function (notifyRes) {
         console.log(notifyRes);

@@ -92,6 +92,10 @@ const onDeviceUp = function (host, url, callback) {
   const client = new Client();
   client.connect(host, function () {
     client.launch(DefaultMediaReceiver, function (err, player) {
+      if (err) {
+        callback(err);
+        return;
+      }
       const media = {
         contentId: url,
         contentType: "audio/mp3",
@@ -104,6 +108,10 @@ const onDeviceUp = function (host, url, callback) {
       }
       player.load(media, { autoplay: true }, function (err, status) {
         client.close();
+        if (err) {
+          callback("err: " + err + "\nstatus: " + status);
+          return;
+        }
         callback("Device notified");
       });
     });
