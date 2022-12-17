@@ -35,17 +35,17 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.post("/play-mp3", async function (req, res) {
+app.post("/play", async function (req, res) {
   const now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
   console.log(now);
 
   if (!req.body) return res.sendStatus(400);
   console.log(req.body);
-  const url = req.body.url;
+  const { deviceName, mp3Url, mp3Title } = req.body;
 
   if (await isMute()) {
     try {
-      play(muteSoundUrl, function (playRes) {
+      play(deviceName, muteSoundUrl, "mute", function (playRes) {
         console.log(playRes);
         res.send(deviceName + " will play: " + muteSoundUrl + "\n");
       });
@@ -57,11 +57,11 @@ app.post("/play-mp3", async function (req, res) {
     return;
   }
 
-  if (url) {
+  if (mp3Url) {
     try {
-      play(url, function (playRes) {
+      play(deviceName, mp3Url, mp3Title, function (playRes) {
         console.log(playRes);
-        res.send(deviceName + " will play: " + url + "\n");
+        res.send(deviceName + " will play: " + mp3Url + "\n");
       });
     } catch (err) {
       console.log(err);
@@ -69,7 +69,7 @@ app.post("/play-mp3", async function (req, res) {
       res.send(err);
     }
   } else {
-    res.send('Please POST "url=http://xxx"');
+    res.send('Please POST "deviceName=xxx&mp3Url=http://xxx&mp3Title=xxx"');
   }
 });
 
@@ -83,7 +83,7 @@ app.post("/google-home-voicetext", async function (req, res) {
 
   if (await isMute()) {
     try {
-      play(muteSoundUrl, function (playRes) {
+      play(deviceName, muteSoundUrl, "mute", function (playRes) {
         console.log(playRes);
         res.send(deviceName + " will play: " + muteSoundUrl + "\n");
       });
@@ -125,8 +125,8 @@ app.listen(serverPort, function () {
       "/google-home-voicetext"
   );
   console.log(
-    'curl -X POST -d "url=http://xxx" http://{Server IP address}:' +
+    'curl -X POST -d "deviceName=xxx&mp3Url=http://xxx&mp3Title=xxx" http://{Server IP address}:' +
       serverPort +
-      "/play-mp3"
+      "/play"
   );
 });

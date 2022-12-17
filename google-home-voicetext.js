@@ -2,16 +2,14 @@ import { Client, DefaultMediaReceiver } from "castv2-client";
 import { VoiceTextWriter } from "./voice-text-writer.js";
 import mdns from "mdns-js";
 
-const browser = mdns.createBrowser(mdns.tcp("googlecast"));
-mdns.excludeInterface("0.0.0.0");
-
+let deviceName;
 let deviceAddress;
 let language;
 
 const voiceTextWriter = new VoiceTextWriter();
 
 export let device = function (name, lang = "ja") {
-  device = name;
+  deviceName = name;
   language = lang;
   return this;
 };
@@ -22,6 +20,9 @@ export const ip = function (ip) {
 };
 
 export const notify = function (message, callback) {
+  const browser = mdns.createBrowser(mdns.tcp("googlecast"));
+  mdns.excludeInterface("0.0.0.0");
+
   if (!deviceAddress) {
     browser.on("ready", function () {
       console.log("ready");
@@ -37,7 +38,7 @@ export const notify = function (message, callback) {
       );
       if (
         typeof service.fullname != "undefined" &&
-        service.fullname.includes(device.replace(" ", "-"))
+        service.fullname.includes(deviceName)
       ) {
         console.log(
           'found device "%s" at %s:%d',
@@ -46,62 +47,59 @@ export const notify = function (message, callback) {
           service.port
         );
         deviceAddress = service.addresses[0];
-        getSpeechUrl(message, deviceAddress, function (res) {
+        getSpeechUrl(deviceAddress, message, function (res) {
           callback(res);
         });
         browser.stop();
       }
     });
   } else {
-    getSpeechUrl(message, deviceAddress, function (res) {
+    getSpeechUrl(deviceAddress, message, function (res) {
       callback(res);
     });
   }
 };
 
-export const play = function (mp3_url, callback) {
-  if (!deviceAddress) {
-    browser.on("ready", function () {
-      console.log("ready");
-      browser.discover();
-    });
+export const play = function (deviceName, mp3Url, mp3Title, callback) {
+  const browser = mdns.createBrowser(mdns.tcp("googlecast"));
+  mdns.excludeInterface("0.0.0.0");
 
-    browser.on("update", function (service) {
+  browser.on("ready", function () {
+    console.log("ready");
+    browser.discover();
+  });
+
+  browser.on("update", function (service) {
+    console.log(
+      'Device "%s" at %s:%d',
+      service.fullname,
+      service.addresses[0],
+      service.port
+    );
+    if (
+      typeof service.fullname != "undefined" &&
+      service.fullname.includes(deviceName)
+    ) {
       console.log(
-        'Device "%s" at %s:%d',
+        'found device "%s" at %s:%d',
         service.fullname,
         service.addresses[0],
         service.port
       );
-      if (
-        typeof service.fullname != "undefined" &&
-        service.fullname.includes(device.replace(" ", "-"))
-      ) {
-        console.log(
-          'found device "%s" at %s:%d',
-          service.fullname,
-          service.addresses[0],
-          service.port
-        );
-        deviceAddress = service.addresses[0];
-        getPlayUrl(mp3_url, deviceAddress, function (res) {
-          callback(res);
-        });
-        browser.stop();
-      }
-    });
-  } else {
-    getPlayUrl(mp3_url, deviceAddress, function (res) {
-      callback(res);
-    });
-  }
+      deviceAddress = service.addresses[0];
+      getPlayUrl(deviceAddress, mp3Url, mp3Title, function (res) {
+        callback(res);
+      });
+      browser.stop();
+    }
+  });
 };
 
-const getSpeechUrl = function (text, host, callback) {
+const getSpeechUrl = function (host, text, callback) {
   voiceTextWriter
     .convertToText(text)
     .then(function (result, reject) {
-      onDeviceUp(host, result, function (res) {
+      onDeviceUp(host, result, "text", function (res) {
         callback(res);
       });
     })
@@ -110,13 +108,13 @@ const getSpeechUrl = function (text, host, callback) {
     });
 };
 
-const getPlayUrl = function (url, host, callback) {
-  onDeviceUp(host, url, function (res) {
+const getPlayUrl = function (host, url, mp3Title, callback) {
+  onDeviceUp(host, url, mp3Title, function (res) {
     callback(res);
   });
 };
 
-const onDeviceUp = function (host, url, callback) {
+const onDeviceUp = function (host, url, mp3Title, callback) {
   const client = new Client();
   client.connect(host, function () {
     client.launch(DefaultMediaReceiver, function (err, player) {
@@ -128,6 +126,7 @@ const onDeviceUp = function (host, url, callback) {
         contentId: url,
         contentType: "audio/mp3",
         streamType: "LIVE", // BUFFERED|LIVE
+        title: mp3Title,
       };
       if (url.endsWith("wav")) {
         media.contentType = "audio/wav";
