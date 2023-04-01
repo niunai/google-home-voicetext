@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+import { logInfo } from "./util.js";
 
 const app = express();
 const serverPort = 8082;
@@ -37,5 +38,5 @@ app.get("/googlehome/:voiceFileName", (req, res) => {
 });
 
 app.listen(serverPort, () => {
-  console.log(`Start file-server. Port is ${serverPort}`);
+  logInfo(`Start file-server. Port is ${serverPort}`);
 });

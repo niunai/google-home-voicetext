@@ -19,6 +19,7 @@
     "fs": "0.0.1-security",
     "mdns-js": "^1.0.3",
     "os": "^0.1.1",
-    "voicetext": "0.0.7"
+    "voicetext": "0.0.7",
+    "winston": "^3.8.2"
   }
 }

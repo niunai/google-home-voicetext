@@ -1,6 +1,7 @@
 import { Client, DefaultMediaReceiver } from "castv2-client";
 import { VoiceTextWriter } from "./voice-text-writer.js";
 import mdns from "mdns-js";
+import { logInfo, logErr } from "./util.js";
 
 let deviceName;
 let deviceAddress;
@@ -25,12 +26,12 @@ export const notify = function (message, callback) {
 
   if (!deviceAddress) {
     browser.on("ready", function () {
-      console.log("ready");
+      logInfo("ready");
       browser.discover();
     });
 
     browser.on("update", function (service) {
-      console.log(
+      logInfo(
         'Device "%s" at %s:%d',
         service.fullname,
         service.addresses[0],
@@ -40,7 +41,7 @@ export const notify = function (message, callback) {
         typeof service.fullname != "undefined" &&
         service.fullname.includes(deviceName)
       ) {
-        console.log(
+        logInfo(
           'found device "%s" at %s:%d',
           service.fullname,
           service.addresses[0],
@@ -65,12 +66,12 @@ export const play = function (deviceName, mp3Url, mp3Title, callback) {
   mdns.excludeInterface("0.0.0.0");
 
   browser.on("ready", function () {
-    console.log("ready");
+    logInfo("ready");
     browser.discover();
   });
 
   browser.on("update", function (service) {
-    console.log(
+    logInfo(
       'Device "%s" at %s:%d',
       service.fullname,
       service.addresses[0],
@@ -80,7 +81,7 @@ export const play = function (deviceName, mp3Url, mp3Title, callback) {
       typeof service.fullname != "undefined" &&
       service.fullname.includes(deviceName)
     ) {
-      console.log(
+      logInfo(
         'found device "%s" at %s:%d',
         service.fullname,
         service.addresses[0],
@@ -103,8 +104,8 @@ const getSpeechUrl = function (host, text, callback) {
         callback(res);
       });
     })
-    .catch(function onRejected(error) {
-      console.error(error);
+    .catch(function onRejected(err) {
+      logErr(err);
     });
 };
 
@@ -145,7 +146,7 @@ const onDeviceUp = function (host, url, mp3Title, callback) {
   });
 
   client.on("error", function (err) {
-    console.log("Error: %s", err.message);
+    logErr(err);
     client.close();
     callback("error");
   });

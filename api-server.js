@@ -1,8 +1,9 @@
 import express from "express";
 import { ip, device, notify, play } from "./google-home-voicetext.js";
-import dt from "date-utils";
+// import dt from "date-utils";
 import * as dotenv from "dotenv";
 dotenv.config();
+import { logInfo, logErr } from "./util.js";
 
 const app = express();
 const serverPort = 8083;
@@ -21,7 +22,7 @@ const isMute = async function () {
       return JSON.parse(data.mute);
     })
     .catch((err) => {
-      console.log(err.message);
+      logErr(err);
       return false;
     });
 };
@@ -36,21 +37,21 @@ app.use(function (req, res, next) {
 });
 
 app.post("/play", async function (req, res) {
-  const now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
-  console.log(now);
+  // const now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
+  // console.log(now);
 
   if (!req.body) return res.sendStatus(400);
-  console.log(req.body);
+  logInfo(req.body);
   const { deviceName, mp3Url, mp3Title } = req.body;
 
   if (await isMute()) {
     try {
       play(deviceName, muteSoundUrl, "mute", function (playRes) {
-        console.log(playRes);
+        logInfo(playRes);
         res.send(deviceName + " will play: " + muteSoundUrl + "\n");
       });
     } catch (err) {
-      console.log(err);
+      logErr(err);
       res.sendStatus(500);
       res.send(err);
     }
@@ -60,11 +61,11 @@ app.post("/play", async function (req, res) {
   if (mp3Url) {
     try {
       play(deviceName, mp3Url, mp3Title, function (playRes) {
-        console.log(playRes);
+        logInfo(playRes);
         res.send(deviceName + " will play: " + mp3Url + "\n");
       });
     } catch (err) {
-      console.log(err);
+      logErr(err);
       res.sendStatus(500);
       res.send(err);
     }
@@ -74,21 +75,21 @@ app.post("/play", async function (req, res) {
 });
 
 app.post("/google-home-voicetext", async function (req, res) {
-  const now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
-  console.log(now);
+  // const now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
+  // console.log(now);
 
   if (!req.body) return res.sendStatus(400);
-  console.log(req.body);
+  logInfo(req.body);
   const text = req.body.text;
 
   if (await isMute()) {
     try {
       play(deviceName, muteSoundUrl, "mute", function (playRes) {
-        console.log(playRes);
+        logInfo(playRes);
         res.send(deviceName + " will play: " + muteSoundUrl + "\n");
       });
     } catch (err) {
-      console.log(err);
+      logErr(err);
       res.sendStatus(500);
       res.send(err);
     }
@@ -98,11 +99,11 @@ app.post("/google-home-voicetext", async function (req, res) {
   if (text) {
     try {
       notify(text, function (notifyRes) {
-        console.log(notifyRes);
+        logInfo(notifyRes);
         res.send(deviceName + " will say: " + text + "\n");
       });
     } catch (err) {
-      console.log(err);
+      logErr(err);
       res.sendStatus(500);
       res.send(err);
     }
@@ -112,21 +113,5 @@ app.post("/google-home-voicetext", async function (req, res) {
 });
 
 app.listen(serverPort, function () {
-  console.log('POST "text=Hello Google Home" to:');
-  console.log(
-    "    http://{Server IP address}:" + serverPort + "/google-home-voicetext"
-  );
-  console.log('POST "url=http://xxx" to:');
-  console.log("    http://{Server IP address}:" + serverPort + "/play-mp3");
-  console.log("example:");
-  console.log(
-    'curl -X POST -d "text=こんにちは、Googleです。" http://{Server IP address}:' +
-      serverPort +
-      "/google-home-voicetext"
-  );
-  console.log(
-    'curl -X POST -d "deviceName=xxx&mp3Url=http://xxx&mp3Title=xxx" http://{Server IP address}:' +
-      serverPort +
-      "/play"
-  );
+  logInfo(`Start api-server. Port is ${serverPort}`);
 });

@@ -1,9 +1,10 @@
 import { ip, device, notify, play } from "./google-home-voicetext.js";
-import dt from "date-utils";
+// import dt from "date-utils";
 import admin from "firebase-admin";
 import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
 import * as dotenv from "dotenv";
 dotenv.config();
+import { logInfo, logErr } from "./util.js";
 
 const deviceName = process.env["GOOGLE_HOME_NAME"];
 device(deviceName);
@@ -19,7 +20,7 @@ const isMute = async function () {
       return JSON.parse(data.mute);
     })
     .catch((err) => {
-      console.log(err.message);
+      logErr(err);
       return false;
     });
 };
@@ -39,36 +40,36 @@ const observer = document.onSnapshot(
     if (await isMute()) {
       try {
         play(deviceName, muteSoundUrl, "mute", function (playRes) {
-          console.log(playRes);
+          logInfo(playRes);
         });
       } catch (err) {
-        console.log(err);
+        logErr(err);
       }
       return;
     }
 
     const text = docSnapshot.get("message");
     if (text) {
-      const now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
-      console.log(now);
+      // const now = new Date().toFormat("YYYY-MM-DD HH24:MI:SS");
+      // console.log(now);
       try {
         notify(text, function (notifyRes) {
-          console.log(notifyRes);
+          logInfo(notifyRes);
         });
       } catch (err) {
-        console.log(err);
+        logErr(err);
       }
       document
         .update({
           message: "",
         })
         .then(() => {
-          console.log(text);
+          logInfo(text);
         });
     }
   },
   (err) => {
-    console.log("Firestore error:", err);
-    console.log(document);
+    logErr(err);
+    logInfo(document);
   }
 );

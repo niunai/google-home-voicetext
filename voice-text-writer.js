@@ -7,6 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import * as dotenv from "dotenv";
 dotenv.config();
+import { logErr } from "./util.js";
 
 if (!process.env["VOICETEXT_API_KEY"]) {
   throw new Error("VOICETEXT_API_KEY is required.");
@@ -54,7 +55,7 @@ export class VoiceTextWriter {
         .volume(150)
         .speak(text, function (e, buf) {
           if (e) {
-            console.error(e);
+            logErr(e);
             reject(e);
           } else {
             fs.writeFileSync(OUT_PATH, buf, "binary");
