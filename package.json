@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node api-server.js & node file-server.js & node firestore.js &",
+    "stop": "kill -9 $(pgrep -f api-server.js) & kill -9 $(pgrep -f file-server.js) & kill -9 $(pgrep -f firestore.js) ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "TAKAHASHI Taro",

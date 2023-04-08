@@ -22,7 +22,7 @@ const isMute = async function () {
       return JSON.parse(data.mute);
     })
     .catch((err) => {
-      logErr(err);
+      logErr("fetch", err);
       return false;
     });
 };
@@ -51,7 +51,7 @@ app.post("/play", async function (req, res) {
         res.send(deviceName + " will play: " + muteSoundUrl + "\n");
       });
     } catch (err) {
-      logErr(err);
+      logErr("play", err);
       res.sendStatus(500);
       res.send(err);
     }
@@ -65,7 +65,7 @@ app.post("/play", async function (req, res) {
         res.send(deviceName + " will play: " + mp3Url + "\n");
       });
     } catch (err) {
-      logErr(err);
+      logErr("play", err);
       res.sendStatus(500);
       res.send(err);
     }
@@ -89,7 +89,7 @@ app.post("/google-home-voicetext", async function (req, res) {
         res.send(deviceName + " will play: " + muteSoundUrl + "\n");
       });
     } catch (err) {
-      logErr(err);
+      logErr("play", err);
       res.sendStatus(500);
       res.send(err);
     }
@@ -103,7 +103,7 @@ app.post("/google-home-voicetext", async function (req, res) {
         res.send(deviceName + " will say: " + text + "\n");
       });
     } catch (err) {
-      logErr(err);
+      logErr("notify", err);
       res.sendStatus(500);
       res.send(err);
     }

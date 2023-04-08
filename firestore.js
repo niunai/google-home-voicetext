@@ -20,7 +20,7 @@ const isMute = async function () {
       return JSON.parse(data.mute);
     })
     .catch((err) => {
-      logErr(err);
+      logErr("fetch", err);
       return false;
     });
 };
@@ -43,7 +43,7 @@ const observer = document.onSnapshot(
           logInfo(playRes);
         });
       } catch (err) {
-        logErr(err);
+        logErr("play", err);
       }
       return;
     }
@@ -57,7 +57,7 @@ const observer = document.onSnapshot(
           logInfo(notifyRes);
         });
       } catch (err) {
-        logErr(err);
+        logErr("notify", err);
       }
       document
         .update({
@@ -69,7 +69,7 @@ const observer = document.onSnapshot(
     }
   },
   (err) => {
-    logErr(err);
+    logErr("onSnapshot", err);
     logInfo(document);
   }
 );

@@ -10,8 +10,8 @@ const logger = createLogger({
   transports: [
     new transports.Console({
       format: format.combine(
-        format.errors({ stack: true }),
-        format.metadata(),
+        // format.errors({ stack: true }),
+        // format.metadata(),
         format.timestamp({ format: timezoned }),
         format.splat(),
         format.json()
@@ -20,8 +20,8 @@ const logger = createLogger({
   ],
 });
 
-export function logErr(msg) {
-  logger.error(new Error(msg));
+export function logErr(moduleName, msg) {
+  logger.error(`${moduleName}: ${msg}`);
 }
 
 export function logInfo(msg) {

@@ -55,7 +55,7 @@ export class VoiceTextWriter {
         .volume(150)
         .speak(text, function (e, buf) {
           if (e) {
-            logErr(e);
+            logErr("voice", e);
             reject(e);
           } else {
             fs.writeFileSync(OUT_PATH, buf, "binary");

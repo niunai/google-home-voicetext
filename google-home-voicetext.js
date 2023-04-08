@@ -105,7 +105,7 @@ const getSpeechUrl = function (host, text, callback) {
       });
     })
     .catch(function onRejected(err) {
-      logErr(err);
+      logErr("voiceTextWriter", err);
     });
 };
 
@@ -146,7 +146,7 @@ const onDeviceUp = function (host, url, mp3Title, callback) {
   });
 
   client.on("error", function (err) {
-    logErr(err);
+    logErr("client.on", err);
     client.close();
     callback("error");
   });
