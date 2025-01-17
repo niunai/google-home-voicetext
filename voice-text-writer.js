@@ -50,9 +50,10 @@ export class VoiceTextWriter {
     return new Promise(function (resolve, reject) {
       voice
         .speaker(speakers[Math.floor(Math.random() * speakers.length)])
-        .emotion(voice.EMOTION.HAPPINESS)
-        .emotion_level(voice.EMOTION_LEVEL.HIGH)
+        // .emotion(voice.EMOTION.HAPPINESS)
+        // .emotion_level(voice.EMOTION_LEVEL.HIGH)
         .volume(150)
+        .speed(200)
         .speak(text, function (e, buf) {
           if (e) {
             logErr("voice", e);
