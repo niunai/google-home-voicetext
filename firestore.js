@@ -1,7 +1,11 @@
 import { ip, device, notify, play } from "./google-home-voicetext.js";
 // import dt from "date-utils";
 import admin from "firebase-admin";
-import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
+
+// import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
+import { readFile } from 'fs/promises';
+const serviceAccount = JSON.parse(await readFile('./serviceAccountKey.json'))
+
 import * as dotenv from "dotenv";
 dotenv.config();
 import { logInfo, logErr } from "./util.js";
