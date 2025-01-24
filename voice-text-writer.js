@@ -53,7 +53,7 @@ export class VoiceTextWriter {
         // .emotion(voice.EMOTION.HAPPINESS)
         // .emotion_level(voice.EMOTION_LEVEL.HIGH)
         .volume(150)
-        .speed(200)
+        .speed(150)
         .speak(text, function (e, buf) {
           if (e) {
             logErr("voice", e);
