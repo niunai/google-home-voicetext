@@ -22,7 +22,7 @@ const isMute = async function () {
       return JSON.parse(data.mute);
     })
     .catch((err) => {
-      logErr("fetch", err);
+      logErr("fetch", err.cause);
       return false;
     });
 };
